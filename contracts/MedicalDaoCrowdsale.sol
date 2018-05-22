@@ -5,9 +5,10 @@ import './SafeMath.sol';
 import './MintableToken.sol';
 import './WhiteListAccess.sol';
 import './Crowdsale.sol';
+import './KycContract.sol';
 
 
-contract MedicalDaoCrowdsale is Ownable, WhiteListAccess, Crowdsale, MintableToken {
+contract MedicalDaoCrowdsale is Ownable, WhiteListAccess, Crowdsale, MintableToken, KycContract {
     using SafeMath for uint256;
 
     // TODO : Update the sale Time
@@ -72,6 +73,7 @@ contract MedicalDaoCrowdsale is Ownable, WhiteListAccess, Crowdsale, MintableTok
     function buyTokens(address _investor) public  payable returns (uint256){
         require(_investor != address(0));
         require(whitelist[msg.sender]);
+        require(verifiedAddresses[msg.sender]);
         require(validPurchase());
         uint256 weiAmount = msg.value;
         uint256 tokens = _getTokenAmount(weiAmount);
