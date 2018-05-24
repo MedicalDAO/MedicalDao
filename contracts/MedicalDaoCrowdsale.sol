@@ -152,6 +152,12 @@ contract MedicalDaoCrowdsale is Ownable, WhiteListAccess, Crowdsale, MintableTok
       return withinPeriod && minimumContribution && withinCap;
     }
 
+    function readyForFinish() internal view returns(bool) {
+      bool endPeriod = now < mainsaleEndTime;
+      bool reachCap = tokenAllocated <= mainsaleCap;
+      return endPeriod || reachCap;
+    }
+
     // Finish: Mint Extra Tokens as needed before finalizing the Crowdsale.
     function finalize(
       address _teamFund,
@@ -159,7 +165,7 @@ contract MedicalDaoCrowdsale is Ownable, WhiteListAccess, Crowdsale, MintableTok
       ) public onlyOwner returns (bool result) {
         require(_teamFund != address(0));
         require(_bountyFund != address(0));
-        require(now < mainsaleEndTime);
+        require(readyForFinish());
         result = false;
         mint(_teamFund, tokensForTeam, owner);
         mint(_bountyFund, tokensForBounty, owner);
